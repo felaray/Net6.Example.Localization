@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Razor;
 using Net6.Example.Localization.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.AddMvc()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+
 
 builder.Services.AddTransient<Middleware>();
 
@@ -39,6 +47,14 @@ app.UseMiddleware<Middleware>();
 
 app.MapRazorPages();
 app.MapControllers();
+
+var supportedCultures = new[] { "en-US", "zh-TW" };
+var localizationOptions = new RequestLocalizationOptions()
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures)
+    .SetDefaultCulture(supportedCultures[1]);
+
+app.UseRequestLocalization(localizationOptions);
 
 
 app.Run();

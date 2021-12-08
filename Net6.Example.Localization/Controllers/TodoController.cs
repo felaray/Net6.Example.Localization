@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +10,57 @@ namespace Net6.Example.Localization.Controllers
     [ApiController]
     public class TodoController : ControllerBase
     {
-        // GET: api/<TodoController>
+        private readonly IStringLocalizer<TodoController> _localizer;
+
+        public TodoController(IStringLocalizer<TodoController> localizer)
+        {
+            _localizer = localizer;
+        }
+
+        /// <summary>
+        /// 測試語言包
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult SayHi()
         {
-            return new string[] { "value1", "value2" };
+            var data = new
+            {
+                txt = _localizer["hello"],
+
+            };
+
+            return Ok(data);
         }
 
-        // GET api/<TodoController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        /// <summary>
+        /// 以cookie設定語言
+        /// </summary>
+        /// <param name="culture"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpPost("cookie")]
+        public IActionResult setCultureInCookie(string culture)
         {
-            return "value";
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+
+            return LocalRedirect("~/");
         }
 
-        // POST api/<TodoController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        /// <summary>
+        /// 移除語言設定
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("cookie")]
+        public IActionResult delelteCultureInCookie()
         {
-        }
+            Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
 
-        // PUT api/<TodoController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<TodoController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return LocalRedirect("~/");
         }
     }
 }

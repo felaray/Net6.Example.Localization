@@ -25,25 +25,25 @@ namespace Net6.Example.Localization.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMail(string viewName)
+        public async Task<IActionResult> SendMail(string viewName, string toUserEmail)
         {
-            var subject = string.Format("Jobdone Test");
+            if (string.IsNullOrEmpty(viewName))
+                viewName = "index";
 
-            //JsonSerializer.Serialize(model);
+            if (string.IsNullOrEmpty(toUserEmail))
+                return BadRequest("toUserEmail is null");
+
+            var subject = "RazorPage Demo";
 
             var htmlContent = await _viewRenderService.RenderToStringAsync(viewName, new IndexModel
             {
 
             });
-           
-            var Tos = new List<EmailAddress>();
-            Tos.Add(new EmailAddress { Email = "felaray@fab26.cyou" });
 
-            var Bccs = new List<EmailAddress>();
-            //Bccs.Add(new EmailAddress { Email = "carol@pyramius.com" });
-            Bccs.Add(new EmailAddress { Email = "felaray@gmail.com" });
-            subject = "[Test] FelarayTest";
-            await SendMailBySendGrid(subject, null, htmlContent, Tos, Bccs);
+            var Tos = new List<EmailAddress>();
+            Tos.Add(new EmailAddress { Email = toUserEmail });
+
+            await SendMailBySendGrid(subject, null, htmlContent, Tos);
             return Ok();
         }
 

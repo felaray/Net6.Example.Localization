@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Net6.Example.Localization.Middlewares;
+using Net6.Example.Localization.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,14 @@ builder.Services.AddMvc()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
 
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
+builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+//builder.Services.AddScoped<IRazorViewEngine, RazorViewEngine>();
+//builder.Services.AddScoped<ITempDataProvider>();
+//builder.Services.AddScoped<IRazorPageActivator, RazorPageActivator>();
+
 
 builder.Services.AddTransient<Middleware>();
 
@@ -25,14 +36,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.UseSwagger();
-    //app.UseSwaggerUI();
-
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

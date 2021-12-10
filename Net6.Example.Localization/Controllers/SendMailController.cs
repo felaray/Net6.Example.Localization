@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Net6.Example.Localization.Pages;
+﻿using Microsoft.AspNetCore.Mvc;
 using Net6.Example.Localization.Services;
+using Net6.Example.Localization.Views;
+using RazorLight;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -35,16 +35,34 @@ namespace Net6.Example.Localization.Controllers
 
             var subject = "RazorPage Demo";
 
-            var htmlContent = await _viewRenderService.RenderToStringAsync(viewName, new IndexModel
-            {
+            var engine = new RazorLightEngineBuilder()
+                            .UseMemoryCachingProvider()
+                            .UseEmbeddedResourcesProject(typeof(Program))
+                            .Build();
 
-            });
+            var model = new EmailModel {  };
+            string htmlContent;
+            try
+            {
+                //"Views.Subfolder.A"
+                htmlContent = await engine.CompileRenderAsync<string>(viewName, null, null);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
 
             var Tos = new List<EmailAddress>();
             Tos.Add(new EmailAddress { Email = toUserEmail });
 
-            await SendMailBySendGrid(subject, null, htmlContent, Tos);
-            return Ok();
+            var result = await SendMailBySendGrid(subject, null, htmlContent, Tos);
+
+            if (result.IsSuccessStatusCode)
+                return Ok();
+            else
+                return BadRequest();
         }
 
         private async Task<Response> SendMailBySendGrid(string Subject, string PlainTextContent, string HtmlContent, List<EmailAddress> MailTos, List<EmailAddress> MailBCCs = null)

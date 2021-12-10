@@ -1,0 +1,13 @@
+﻿@page
+@model Net6.Example.Localization.Views.EmailModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    @*從資源檔拿出hello欄位的值*@
+    <h1 class="display-4">@_localizer["hello"]</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>

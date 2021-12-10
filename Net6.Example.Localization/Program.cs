@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Net6.Example.Localization.Middlewares;
 using Net6.Example.Localization.Services;
 
@@ -18,7 +20,15 @@ builder.Services.AddMvc()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
 
-builder.Services.AddTransient<IViewRenderService, ViewRenderService>();
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
+builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+//builder.Services.AddScoped<IRazorViewEngine, RazorViewEngine>();
+//builder.Services.AddScoped<ITempDataProvider>();
+//builder.Services.AddScoped<IRazorPageActivator, RazorPageActivator>();
+
+
 builder.Services.AddTransient<Middleware>();
 
 var app = builder.Build();

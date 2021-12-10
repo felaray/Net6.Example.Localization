@@ -31,7 +31,7 @@ namespace Net6.Example.Localization.Controllers
 
             //JsonSerializer.Serialize(model);
 
-            var htmlContent = await _viewRenderService.RenderToStringAsync("SubscriptionIsDue", new IndexModel
+            var htmlContent = await _viewRenderService.RenderToStringAsync("Index", new IndexModel
             {
 
             });

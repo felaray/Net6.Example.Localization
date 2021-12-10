@@ -51,12 +51,14 @@ namespace Net6.Example.Localization.Services
 
         public async Task<string> RenderToStringAsync<T>(string pageName, T model) where T : PageModel
         {
-
+            //var getRouteData= _httpContext.HttpContext.GetRouteData();
+            var routeData = new RouteData();
+            routeData.Values.Add("page", "/Pages");
 
             var actionContext =
                 new ActionContext(
                     _httpContext.HttpContext,
-                    _httpContext.HttpContext.GetRouteData(),
+                    routeData,
                     _actionContext.ActionContext.ActionDescriptor
                 );
 

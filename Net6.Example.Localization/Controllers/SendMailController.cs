@@ -25,16 +25,17 @@ namespace Net6.Example.Localization.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMail()
+        public async Task<IActionResult> SendMail(string viewName)
         {
             var subject = string.Format("Jobdone Test");
 
             //JsonSerializer.Serialize(model);
 
-            var htmlContent = await _viewRenderService.RenderToStringAsync("Index", new IndexModel
+            var htmlContent = await _viewRenderService.RenderToStringAsync(viewName, new IndexModel
             {
 
             });
+           
             var Tos = new List<EmailAddress>();
             Tos.Add(new EmailAddress { Email = "felaray@fab26.cyou" });
 
